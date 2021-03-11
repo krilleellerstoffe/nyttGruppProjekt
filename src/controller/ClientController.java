@@ -94,7 +94,6 @@ public class ClientController {
 
     public void disconnectClient() {
         messageClient.disconnect();
-        System.exit(0);
     }
 
     public void login(String username, ImageIcon img) {

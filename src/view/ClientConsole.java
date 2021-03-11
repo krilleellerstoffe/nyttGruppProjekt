@@ -30,6 +30,7 @@ public class ClientConsole extends JPanel implements PropertyChangeListener {
     private MRecipientsFrame mRecipientsFrame;
     private JPanel eastPanel;
     private JScrollPane scrollPane;
+    private JFrame frame;
 
     public ClientConsole(ClientController client) {
         this.controller = client;
@@ -46,7 +47,7 @@ public class ClientConsole extends JPanel implements PropertyChangeListener {
     }
 
     private void setupComponents() {
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setTitle("Chat console");
         frame.setBounds(100, 100, 820, 600);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -139,6 +140,7 @@ public class ClientConsole extends JPanel implements PropertyChangeListener {
             } else if (e.getSource() == logoutButton) {
                 JOptionPane.showMessageDialog(null, "You are now logged out");
                 controller.disconnectClient();
+                frame.dispose();
             } else if (e.getSource() == addFileButton) {
                 if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     uploadedFile = fileChooser.getSelectedFile().getPath();

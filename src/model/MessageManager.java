@@ -23,6 +23,7 @@ public class MessageManager {
     public synchronized void put(User user, ArrayList<Message> messages) {
         storedMessages.put(user, messages);
     }
+
     public synchronized void remove(User user) {
         storedMessages.remove(user);
     }

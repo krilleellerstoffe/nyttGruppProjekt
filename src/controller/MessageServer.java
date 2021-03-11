@@ -84,17 +84,17 @@ public class MessageServer implements Runnable{
 
             try {
                 if(messageManager.userHasMessages(user)) {
-                    for (Message savedMessage : messageManager.get(user)
-                    ) {
+                    for (Message savedMessage : messageManager.get(user)) {
                         send(savedMessage);
                         System.out.println("stored message sent to " + user.getUserName());
                     }
+                    messageManager.remove(user);
                 }
             while (true) {
                     Message message = (Message) ois.readObject();
                     message.setTimeReceivedByServer(System.currentTimeMillis());
                     sendToConnectedUsers(message);
-                    System.out.println("message received from " + message.getSender() + " with " + message.getRecipients().length + " recipients");
+                    //System.out.println("message received from " + message.getSender() + " with " + message.getRecipients().length + " recipients");
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -143,11 +143,11 @@ public class MessageServer implements Runnable{
                 ClientHandler clientHandler = connectedClients.get(user);
                 if (clientHandler!=null) {
                     clientHandler.send(message);
-                    propertyChangeSupport.firePropertyChange("value", null, message.getSender().getUserName() + " to " + message.getRecipients()[0].getUserName() + ": " + message.getText());
+                    propertyChangeSupport.firePropertyChange("value", null, message.getSender().getUserName() + " to " + user.getUserName() + ": " + message.getText());
                 }
                 else {
                     messageManager.storeMessage(user, message);
-                    propertyChangeSupport.firePropertyChange("value", null, message.getSender().getUserName() + " to " + message.getRecipients()[0].getUserName() + " message stored");
+                    propertyChangeSupport.firePropertyChange("value", null, message.getSender().getUserName() + " to " + user.getUserName() + " message stored");
                 }
             }
 

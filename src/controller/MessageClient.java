@@ -69,7 +69,7 @@ public class MessageClient implements Runnable {
                 } else {
 
                     changes.firePropertyChange("message", null, message);
-                    JOptionPane.showMessageDialog(null, message.getText() + " from " + message.getSender()); //simple message controller.client only
+                    //JOptionPane.showMessageDialog(null, message.getText() + " from " + message.getSender()); //simple message controller.client only
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -78,6 +78,9 @@ public class MessageClient implements Runnable {
     }
 
     public void send(Message message) {
+        if(message.getRecipients().length <= 0 ) {
+            JOptionPane.showMessageDialog(null, "No receivers selected, please choose someone to send your message to!");
+        }
         try {
             oos.writeObject(message);
             JOptionPane.showMessageDialog(null, "message with " + message.getRecipients().length +" recipients sent");
@@ -85,7 +88,6 @@ public class MessageClient implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void disconnect() {
@@ -96,7 +98,7 @@ public class MessageClient implements Runnable {
                 ioException.printStackTrace();
             }
         }
-        System.exit(0);
+        //System.exit(0);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
