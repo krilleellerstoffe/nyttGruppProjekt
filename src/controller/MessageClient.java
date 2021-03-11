@@ -31,14 +31,20 @@ public class MessageClient implements Runnable {
         this.port = port;
     }
 
-    public void connect(User user) throws IOException {
+    public void connect(User user){
 
-        socket = new Socket(ipAddress, port);
-        oos = new ObjectOutputStream(socket.getOutputStream());
-        ois = new ObjectInputStream(socket.getInputStream());
-        this.user = user;
-        connected = true;
-        thread.start();
+        try {
+            socket = new Socket(ipAddress, port);
+            socket.setSoTimeout(5000);
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(socket.getInputStream());
+            this.user = user;
+            connected = true;
+            thread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+            connected = false;
+        }
     }
 
     @Override

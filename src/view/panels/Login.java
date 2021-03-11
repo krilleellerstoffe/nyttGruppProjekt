@@ -116,10 +116,14 @@ public class Login extends Viewer {
                     JOptionPane.showMessageDialog(null, "Username must be longer", "ERROR", JOptionPane.ERROR_MESSAGE);
                 } else {
                     username = txtUsername.getText();
-                    clientController.login(username, avatar);
-                    //uiHandler.showMainWindow();
-                    new ClientConsole(clientController);
-                    //messageClient.addPropertyChangeListener(ui);
+                    if(clientController.login(username, avatar)){
+                        //uiHandler.showMainWindow();
+                        new ClientConsole(clientController);
+                        //messageClient.addPropertyChangeListener(ui);
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(null, "Server not found please check ipAddress");
+                    }
                     dispose();
                 }
             }

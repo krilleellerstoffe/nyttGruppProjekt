@@ -100,13 +100,11 @@ public class ClientController {
         messageClient.disconnect();
     }
 
-    public void login(String username, ImageIcon img) {
+    public boolean login(String username, ImageIcon img) {
         user = new User(username, img);
-        try {
-            messageClient.connect(user);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        messageClient.connect(user);
+        return messageClient.isConnected();
+
     }
 
     public void sendMessage(String text, String fileName, User[] recipients) {
