@@ -35,7 +35,6 @@ public class MessageClient implements Runnable {
 
         try {
             socket = new Socket(ipAddress, port);
-            socket.setSoTimeout(5000);
             oos = new ObjectOutputStream(socket.getOutputStream());
             ois = new ObjectInputStream(socket.getInputStream());
             this.user = user;
