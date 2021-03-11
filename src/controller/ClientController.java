@@ -92,10 +92,6 @@ public class ClientController {
         return contacts;
     }
 
-    public static void main(String[] args){
-        new ClientController();
-    }
-
     public void disconnectClient() {
         messageClient.disconnect();
         System.exit(0);

@@ -189,8 +189,5 @@ public class MessageServer implements Runnable{
         }
     }
 
-    public static void main(String[] args) {
-        new MessageServer(new MessageManager(), 2555);
-    }
 
 }
