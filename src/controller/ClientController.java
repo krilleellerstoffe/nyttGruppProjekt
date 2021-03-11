@@ -22,6 +22,7 @@ public class ClientController {
     public User user;
 
 
+
     public ClientController() {
         messageClient = new MessageClient(SERVERADDRESS, PORT);
         contacts = new ArrayList<User>();
@@ -42,7 +43,9 @@ public class ClientController {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(contact));
                 while (true) {
                     User u = (User) ois.readObject();
-                    contacts.add(u);
+                    if(!contacts.contains(u)) {
+                        contacts.add(u);
+                    }
 
                 }
             } catch (EOFException EOFE) {
@@ -69,7 +72,7 @@ public class ClientController {
         oldContacts.delete();
 
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILEPATH_CONTACTS, true)));
+            ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILEPATH_CONTACTS)));
             for (User u : users) {
                 oos.writeObject(u);
             }

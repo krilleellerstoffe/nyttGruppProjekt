@@ -118,7 +118,7 @@ public class Login extends Viewer {
                     username = txtUsername.getText();
                     clientController.login(username, avatar);
                     //uiHandler.showMainWindow();
-                    clientConsole = new ClientConsole(clientController);
+                    new ClientConsole(clientController);
                     //messageClient.addPropertyChangeListener(ui);
                     dispose();
                 }

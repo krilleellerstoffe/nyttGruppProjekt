@@ -25,7 +25,9 @@ public class MessageManager {
     }
 
     public synchronized void remove(User user) {
-        storedMessages.remove(user);
+        try {
+            storedMessages.remove(user);
+        } catch (Exception e) {}
     }
 
     public boolean userHasMessages(User user) {
