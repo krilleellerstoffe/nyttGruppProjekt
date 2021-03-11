@@ -47,6 +47,13 @@ public class LogFileManager {
         }
         return dates;
     }
+
+    /**
+     * returns all the logs recorded between two given points in time
+     * @param timeFrom
+     * @param timeTill
+     * @return
+     */
     public synchronized ArrayList<Log> readLogFile(long timeFrom, long timeTill) {
 
         ArrayList<Log> logs = new ArrayList<>();

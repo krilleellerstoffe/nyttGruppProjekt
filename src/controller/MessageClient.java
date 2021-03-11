@@ -1,5 +1,6 @@
-package client;
+package controller;
 
+import controller.ClientController;
 import model.Message;
 import model.User;
 
@@ -24,7 +25,7 @@ public class MessageClient implements Runnable {
     private int port;
     private boolean connected = false;
 
-    public MessageClient (String ipAddress, int port) {
+    public MessageClient(String ipAddress, int port) {
 
         this.ipAddress = ipAddress;
         this.port = port;
@@ -58,24 +59,28 @@ public class MessageClient implements Runnable {
     public void listen() {
 
         try {
-        while (true){
+            while (true) {
                 Message message;
                 message = (Message) ois.readObject();
-                if(message.getSender().getUserName().equals("Server")) {
+                if (message.getSender().getUserName().equals("Server")) {
                     User[] connectedUsers = message.getRecipients();
+
                     changes.firePropertyChange("connectedUsers", null, connectedUsers);
-                }
-                else {
+                } else {
+
                     changes.firePropertyChange("message", null, message);
+                    JOptionPane.showMessageDialog(null, message.getText() + " from " + message.getSender()); //simple message controller.client only
                 }
             }
-        }catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
-    public void send (Message message) {
+
+    public void send(Message message) {
         try {
             oos.writeObject(message);
+            JOptionPane.showMessageDialog(null, "message with " + message.getRecipients().length +" recipients sent");
             oos.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,16 +88,17 @@ public class MessageClient implements Runnable {
 
     }
 
-  public void disconnect() {
-      if (socket!=null) {
-          try {
-              socket.close();
-          } catch (IOException ioException) {
-              ioException.printStackTrace();
-          }
-      }
-      System.exit(0);
-  }
+    public void disconnect() {
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
+        System.exit(0);
+    }
+
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         changes.addPropertyChangeListener(listener);
     }

@@ -1,19 +1,24 @@
-package server.panels;
+package view.panels;
 
 
-import server.Controller;
-import server.Viewer;
+import controller.MessageClient;
+import model.Message;
+import model.User;
+import controller.Controller;
+import view.Viewer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class Menu extends Viewer {
 
     private JTextField ip;
     private JButton serverBtn;
     private JButton connectBtn;
+    private JButton simpleConnect;
     private Controller controller;
 
     public Menu(String title, int width, int height, Controller controller) {
@@ -28,7 +33,7 @@ public class Menu extends Viewer {
         JPanel panel = new JPanel();
         panel.setBackground(Color.white);
         JPanel inner = new JPanel();
-        inner.setLayout(new GridLayout(3,1,0,0));
+        inner.setLayout(new GridLayout(4,1,0,0));
 
         inner.setPreferredSize(new Dimension(150,100));
 
@@ -44,6 +49,10 @@ public class Menu extends Viewer {
         serverBtn = new JButton("Run Server");
         serverBtn.addActionListener(action);
         inner.add(serverBtn);
+
+        simpleConnect = new JButton("Connect simple controller.client");
+        simpleConnect.addActionListener(action);
+        inner.add(simpleConnect);
 
         panel.add(inner, BorderLayout.SOUTH);
         return panel;
@@ -67,6 +76,19 @@ public class Menu extends Viewer {
                 }else{
                     JOptionPane.showMessageDialog(null, "Couldn't start server, might already be running.");
                 }
+            }
+            if(e.getSource().equals(simpleConnect)){
+                MessageClient simpleClient = new MessageClient("localhost", 2555);
+                try {
+                    User simpleUser = new User(JOptionPane.showInputDialog("Enter username"));
+                    simpleClient.connect(simpleUser);
+                    User[] simpleRecipient = new User[1];
+                    simpleRecipient[0] = new User(JOptionPane.showInputDialog("Enter recipient"));
+                    simpleClient.send(new Message("simple message", simpleUser, simpleRecipient));
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
             }
             if (e.getSource().equals(connectBtn)) {
                 if (controller.connect(ip.getText())) {

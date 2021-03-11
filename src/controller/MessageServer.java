@@ -1,4 +1,4 @@
-package server;
+package controller;
 
 import model.Message;
 import model.MessageManager;
@@ -17,7 +17,7 @@ public class MessageServer implements Runnable{
 
 
     private MessageManager messageManager;
-    ConnectedClients connectedClients;
+    private ConnectedClients connectedClients;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private ServerSocket serverSocket;
     public Thread server = new Thread(this);
@@ -83,9 +83,18 @@ public class MessageServer implements Runnable{
         public void run() {
 
             try {
+                if(messageManager.userHasMessages(user)) {
+                    for (Message savedMessage : messageManager.get(user)
+                    ) {
+                        send(savedMessage);
+                        System.out.println("stored message sent to " + user.getUserName());
+                    }
+                }
             while (true) {
                     Message message = (Message) ois.readObject();
+                    message.setTimeReceivedByServer(System.currentTimeMillis());
                     sendToConnectedUsers(message);
+                    System.out.println("message received from " + message.getSender() + " with " + message.getRecipients().length + " recipients");
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -104,12 +113,13 @@ public class MessageServer implements Runnable{
 
         public void send(Message message) {
             try {
+                message.setTimeMessageDelivered(System.currentTimeMillis());
                 oos.writeObject(message);
+                System.out.println("message sent to " + user);
                 oos.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -117,9 +127,18 @@ public class MessageServer implements Runnable{
         return running;
     }
 
+    public void disconnect() {
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void sendToConnectedUsers(Message message) {
 
         User[] recipients = message.getRecipients();
+        System.out.println("MessageServer" + recipients);
         for (User user: recipients) {
                 ClientHandler clientHandler = connectedClients.get(user);
                 if (clientHandler!=null) {

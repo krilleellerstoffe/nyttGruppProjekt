@@ -1,8 +1,8 @@
-package server.panels;
+package view.panels;
 
+import controller.Controller;
 import model.LogFileManager;
-import server.Controller;
-import server.Viewer;
+import view.Viewer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

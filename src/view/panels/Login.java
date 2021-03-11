@@ -1,47 +1,47 @@
-package client;
+package view.panels;
 
-import java.awt.Color;
-import java.awt.Font;
+
+import view.ClientConsole;
+import controller.ClientController;
+import view.Viewer;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
+public class Login extends Viewer {
 
-public class LoginFrame extends JFrame {
-
-    private UIHandler uiHandler;
+    private JPanel panel;
     private JPanel avatarPane;
 
     private JPanel contentPane;
     private JTextField txtUsername;
     private JButton btnLogIn = new JButton("Log in");
     private JButton btnChooseImage = new JButton("Choose image");
+    private ClientConsole clientConsole;
 
     private ImageIcon avatar;
     private String username;
+    private ClientController clientController;
 
-    public LoginFrame(UIHandler ui) {
+    public Login(String title, int width, int height) {
+        super(title, width, height);
+        this.clientController = new ClientController();
+        add(content());
+    }
 
-        this.uiHandler = ui;
-
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 700, 500);
+    @Override
+    public JPanel content() {
+        panel = new JPanel();
+        //clientConsole = new JPanel();
+        panel.setLayout(new BorderLayout());
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
@@ -67,8 +67,8 @@ public class LoginFrame extends JFrame {
                     JOptionPane.showMessageDialog(null, "Username must be longer", "ERROR", JOptionPane.ERROR_MESSAGE);
                 } else {
                     username = txtUsername.getText();
-                    uiHandler.logIn(username, avatar);
-                    uiHandler.showMainWindow();
+                    //uiHandler.logIn(username, avatar);
+                    //uiHandler.showMainWindow();
                     dispose();
                 }
             }
@@ -81,7 +81,7 @@ public class LoginFrame extends JFrame {
         contentPane.add(lblUsername);
 
         btnLogIn.setBounds(289, 385, 89, 23);
-        btnLogIn.addActionListener(new ButtonListener());
+        btnLogIn.addActionListener(new Login.ButtonListener());
         contentPane.add(btnLogIn);
 
         avatarPane = new JPanel();
@@ -90,8 +90,9 @@ public class LoginFrame extends JFrame {
         contentPane.add(avatarPane);
 
         btnChooseImage.setBounds(275, 135, 125, 23);
-        btnChooseImage.addActionListener(new ButtonListener());
+        btnChooseImage.addActionListener(new Login.ButtonListener());
         contentPane.add(btnChooseImage);
+        return panel;
     }
 
     private class ButtonListener implements ActionListener {
@@ -110,15 +111,15 @@ public class LoginFrame extends JFrame {
                     avatarPane.updateUI();
                 }
             }
-
             if (e.getSource() == btnLogIn) {
-
                 if (txtUsername.getText().length() <= 0) {
                     JOptionPane.showMessageDialog(null, "Username must be longer", "ERROR", JOptionPane.ERROR_MESSAGE);
                 } else {
                     username = txtUsername.getText();
-                    uiHandler.logIn(username, avatar);
-                    uiHandler.showMainWindow();
+                    clientController.login(username, avatar);
+                    //uiHandler.showMainWindow();
+                    clientConsole = new ClientConsole(clientController);
+                    //messageClient.addPropertyChangeListener(ui);
                     dispose();
                 }
             }

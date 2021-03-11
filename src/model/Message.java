@@ -2,6 +2,7 @@ package model;
 
 import javax.swing.*;
 import java.io.Serializable;
+import java.util.Date;
 
 public class Message implements Serializable {
 
@@ -15,7 +16,7 @@ public class Message implements Serializable {
     public Message(User[] connectedUsers) {
         this.recipients = connectedUsers;
         this.text = "ConnectedUsers";
-        this.sender = new User("Server");
+        this.sender = new User("Server"); //if the message has no sender defined, it has to be from the server itself
 
     }
 
@@ -43,7 +44,7 @@ public class Message implements Serializable {
         return text;
     }
 
-    public Icon getIcon() {
+    public ImageIcon getIcon() {
         return icon;
     }
 
@@ -65,5 +66,14 @@ public class Message implements Serializable {
 
     public User[] getRecipients() {
         return recipients;
+    }
+
+    public String toString () {
+
+        Date dateCreated = new Date(getTimeReceivedByServer());
+        Date dateReceived = new Date(getTimeMessageDelivered());
+
+        String messageContents = dateReceived + getText() + " " + "sent by " + getSender().getUserName() +" " + dateCreated;
+        return messageContents;
     }
 }

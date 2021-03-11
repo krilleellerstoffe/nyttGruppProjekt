@@ -26,4 +26,8 @@ public class MessageManager {
     public synchronized void remove(User user) {
         storedMessages.remove(user);
     }
+
+    public boolean userHasMessages(User user) {
+        return storedMessages.containsKey(user);
+    }
 }

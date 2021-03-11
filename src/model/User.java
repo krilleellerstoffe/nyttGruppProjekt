@@ -32,4 +32,8 @@ public class User implements Serializable {
     public ImageIcon getImage() {
         return image;
     }
+
+    public String toString() {
+        return username;
+    }
 }

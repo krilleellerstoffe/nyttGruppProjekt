@@ -1,11 +1,10 @@
-package client;
+package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -23,16 +22,16 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import client.ClientController;
+import controller.ClientController;
 import model.User;
 
 public class MRecipientsFrame extends JFrame {
 
     private JPanel contentPane;
 
-    private JList<String> listConnected;
-    private JList<String> listContacts;
-    private JList<String> listRecipients;
+    private JList<User> listConnected;
+    private JList<User> listContacts;
+    private JList<User> listRecipients;
 
     private ClientController controller;
 
@@ -42,13 +41,25 @@ public class MRecipientsFrame extends JFrame {
     private JButton btnAdd;
     private JButton btnRemove;
 
-    private HashMap<String,User> userMap;
     private ArrayList<User> recipients;
 
     public MRecipientsFrame(ClientController controller) {
         this.controller = controller;
+        listRecipients = new JList<>();
+        listContacts = new JList<>();
+        listConnected = new JList<>();
+        recipients = new ArrayList<User>();
         init();
         initLists();
+    }
+
+    public User[] getRecipients() {
+
+        User[] recipientsArray = new User[recipients.size()];
+        for (int i = 0; i < recipients.size(); i++) {
+            recipientsArray[i] = recipients.get(i);
+        }
+        return recipientsArray;
     }
 
     private void init() {
@@ -76,7 +87,6 @@ public class MRecipientsFrame extends JFrame {
         scrollPane.setBounds(10, 11, 237, 615);
         panel.add(scrollPane);
 
-        listConnected = new JList<String>();
         listConnected.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listConnected.addListSelectionListener(listListener);
         scrollPane.setViewportView(listConnected);
@@ -89,7 +99,6 @@ public class MRecipientsFrame extends JFrame {
         scrollPane_1.setBounds(270, 11, 237, 615);
         panel.add(scrollPane_1);
 
-        listContacts = new JList<String>();
         listContacts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listContacts.addListSelectionListener(listListener);
         scrollPane_1.setViewportView(listContacts);
@@ -102,7 +111,6 @@ public class MRecipientsFrame extends JFrame {
         scrollPane_2.setBounds(600, 11, 237, 615);
         panel.add(scrollPane_2);
 
-        listRecipients = new JList<String>();
         listRecipients.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listRecipients.addListSelectionListener(listListener);
         scrollPane_2.setViewportView(listRecipients);
@@ -128,38 +136,35 @@ public class MRecipientsFrame extends JFrame {
     }
 
     public void initLists() {
-        ArrayList<User> connected = controller.getConnectedUsers();
-        ArrayList<User> contacts  = controller.getContacts();
+        User[] connected = controller.getConnectedUsers();
+        ArrayList<User> contacts = controller.getContacts();
 
-        ArrayList<String> connectedString = new ArrayList<String>();
-        ArrayList<String> contactsString = new ArrayList<String>();
+        ArrayList<User> connectedString = new ArrayList<User>();
+        ArrayList<User> contactsString = new ArrayList<User>();
 
-        recipients = new ArrayList<User>();
-        userMap = new HashMap<String,User>();
 
-        for(User u : connected) {
-            userMap.put(u.getUserName(), u);
-            connectedString.add(u.getUserName());
+
+        for (User u : connected) {
+            connectedString.add(u);
         }
 
-        for(User u : contacts) {
-            userMap.put(u.getUserName(), u);
-            contactsString.add(u.getUserName());
+        for (User u : contacts) {
+            contactsString.add(u);
         }
 
-        for(User u : contacts) {
-            if(connectedString.contains(u.getUserName())) {
-                connectedString.remove(u.getUserName());
+        for (User u : contacts) {
+            if (connectedString.contains(u)) {
+                connectedString.remove(u);
             }
         }
 
-        DefaultListModel<String> modelConnected = new DefaultListModel<String>();
-        DefaultListModel<String> modelContacts = new DefaultListModel<String>();
+        DefaultListModel<User> modelConnected = new DefaultListModel<>();
+        DefaultListModel<User> modelContacts = new DefaultListModel<>();
 
-        for(String s : connectedString) {
+        for (User s : connectedString) {
             modelConnected.addElement(s);
         }
-        for(String s : contactsString) {
+        for (User s : contactsString) {
             modelContacts.addElement(s);
         }
 
@@ -170,66 +175,72 @@ public class MRecipientsFrame extends JFrame {
     private class ButtonListener implements ActionListener {
 
         public void actionPerformed(ActionEvent e) {
-            if(e.getSource() == btnDone) {
+            if (e.getSource() == btnDone) {
                 recipients.clear();
 
-                ListModel<String> model = listRecipients.getModel();
+                ListModel<User> model = listRecipients.getModel();
 
                 for (int i = 0; i < model.getSize(); i++) {
-                    User u = userMap.get(model.getElementAt(i));
-                    recipients.add(u);
+                    User user = model.getElementAt(i);
+                    if (user != null) {
+                        recipients.add(user);
+                    }
+
                 }
-  //            Ska Fixas
+                controller.writeContactsToFile(recipients);
+                //controller.setRecipients(recipients.toArray());
+
+                //            Ska Fixas
 
                 thisWindow.dispose();
             }
 
-            if(e.getSource() == btnAdd) {
+            if (e.getSource() == btnAdd) {
 
-                if(listRecipients.getSelectedIndex() != -1) {
-                    JOptionPane.showMessageDialog(null,"Must select in the list of connected contacts, not recipients.", "ERROR", JOptionPane.ERROR_MESSAGE);
+                if (listRecipients.getSelectedIndex() != -1) {
+                    JOptionPane.showMessageDialog(null, "Must select in the list of connected contacts, not recipients.", "ERROR", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    if(listConnected.getSelectedIndex() != -1) {
+                    if (listConnected.getSelectedIndex() != -1) {
                         int index = listConnected.getSelectedIndex();
-                        String username = listConnected.getModel().getElementAt(index);
+                        User username = listConnected.getModel().getElementAt(index);
 
-                        ListModel<String> recipientsModel = listRecipients.getModel();
-                        ArrayList<String> recipientsStrings = new ArrayList<String>();
+                        ListModel<User> recipientsModel = listRecipients.getModel();
+                        ArrayList<User> recipientsStrings = new ArrayList<>();
 
                         for (int i = 0; i < recipientsModel.getSize(); i++) {
                             recipientsStrings.add(recipientsModel.getElementAt(i));
                         }
 
-                        if(recipientsStrings.contains(username)) {
-                            JOptionPane.showMessageDialog(null,"User is already in the list of recipients", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        if (recipientsStrings.contains(username)) {
+                            JOptionPane.showMessageDialog(null, "User is already in the list of recipients", "ERROR", JOptionPane.ERROR_MESSAGE);
                         } else {
                             recipientsStrings.add(username);
-                            DefaultListModel<String> newModel = new DefaultListModel<String>();
+                            DefaultListModel<User> newModel = new DefaultListModel<>();
 
-                            for(String s : recipientsStrings) {
+                            for (User s : recipientsStrings) {
                                 newModel.addElement(s);
                             }
                             listRecipients.setModel(newModel);
                         }
                     }
-                    if(listContacts.getSelectedIndex() != -1) {
+                    if (listContacts.getSelectedIndex() != -1) {
                         int index = listContacts.getSelectedIndex();
-                        String username = listContacts.getModel().getElementAt(index);
+                        User username = listContacts.getModel().getElementAt(index);
 
-                        ListModel<String> recipientsModel = listRecipients.getModel();
-                        ArrayList<String> recipientsStrings = new ArrayList<String>();
+                        ListModel<User> recipientsModel = listRecipients.getModel();
+                        ArrayList<User> recipientsStrings = new ArrayList<>();
 
                         for (int i = 0; i < recipientsModel.getSize(); i++) {
                             recipientsStrings.add(recipientsModel.getElementAt(i));
                         }
 
-                        if(recipientsStrings.contains(username)) {
-                            JOptionPane.showMessageDialog(null,"User is already in the list of recipients", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        if (recipientsStrings.contains(username)) {
+                            JOptionPane.showMessageDialog(null, "User is already in the list of recipients", "ERROR", JOptionPane.ERROR_MESSAGE);
                         } else {
                             recipientsStrings.add(username);
-                            DefaultListModel<String> newModel = new DefaultListModel<String>();
+                            DefaultListModel<User> newModel = new DefaultListModel<>();
 
-                            for(String s : recipientsStrings) {
+                            for (User s : recipientsStrings) {
                                 newModel.addElement(s);
                             }
                             listRecipients.setModel(newModel);
@@ -238,21 +249,21 @@ public class MRecipientsFrame extends JFrame {
                 }
             }
 
-            if(e.getSource() == btnRemove) {
-                if(listRecipients.getSelectedIndex() != -1) {
+            if (e.getSource() == btnRemove) {
+                if (listRecipients.getSelectedIndex() != -1) {
                     int index = listRecipients.getSelectedIndex();
 
-                    ListModel<String> recipientsModel = listRecipients.getModel();
-                    DefaultListModel<String> newModel = new DefaultListModel<String>();
+                    ListModel<User> recipientsModel = listRecipients.getModel();
+                    DefaultListModel<User> newModel = new DefaultListModel<>();
 
                     for (int i = 0; i < recipientsModel.getSize(); i++) {
-                        if(i != index) {
+                        if (i != index) {
                             newModel.addElement(recipientsModel.getElementAt(i));
                         }
                     }
                     listRecipients.setModel(newModel);
                 } else {
-                    JOptionPane.showMessageDialog(null,"Selection must be in the list of recipients", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Selection must be in the list of recipients", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -262,17 +273,17 @@ public class MRecipientsFrame extends JFrame {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-            if(e.getSource() == listConnected) {
+            if (e.getSource() == listConnected) {
                 listContacts.clearSelection();
                 listRecipients.clearSelection();
             }
 
-            if(e.getSource() == listContacts) {
+            if (e.getSource() == listContacts) {
                 listConnected.clearSelection();
                 listRecipients.clearSelection();
             }
 
-            if(e.getSource() == listRecipients) {
+            if (e.getSource() == listRecipients) {
                 listConnected.clearSelection();
                 listContacts.clearSelection();
             }

@@ -1,4 +1,4 @@
-package client;
+package controller;
 
 
 import model.Message;
@@ -13,25 +13,20 @@ public class ClientController {
     private static final String SERVERADDRESS = "localhost";
     private static final int PORT = 2555;
 
-    private static final String FILEPATH_CONTACTS = "LogFile/contacts.dat";
-    private static final String FILEPATH_CONTACTS_FOLDER = "LogFile";
+    private static final String FILEPATH_CONTACTS = "files/contacts.dat";
+    private static final String FILEPATH_CONTACTS_FOLDER = "files";
 
     private ArrayList<User> contacts;
-    private ArrayList<User> connectedUsers;
-    private MessageClient messageClient;
+    private User[] connectedUsers;
+    public MessageClient messageClient;
     public User user;
-    private ClientConsole ui;
-    private UIHandler UI;
 
 
     public ClientController() {
         messageClient = new MessageClient(SERVERADDRESS, PORT);
-        connectedUsers = new ArrayList<User>();
         contacts = new ArrayList<User>();
         readContactsFromFile();
         messageClient.setClientController(this);
-        messageClient.addPropertyChangeListener(ui);
-        UI = new UIHandler(this);
     }
 
     //Read contacts from file, run on startup.
@@ -56,7 +51,6 @@ public class ClientController {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("contacts file did not exist");
         }
     }
 
@@ -64,9 +58,8 @@ public class ClientController {
      * Method that writes the contacts to the filepath.
      * @param users
      */
-    public void writeContacts(ArrayList<User> users) {
 
-        contacts.clear();
+    public void writeContactsToFile(ArrayList<User> users) {
 
         for (User c : users) {
             contacts.add(c);
@@ -76,7 +69,7 @@ public class ClientController {
         oldContacts.delete();
 
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILEPATH_CONTACTS)));
+            ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILEPATH_CONTACTS, true)));
             for (User u : users) {
                 oos.writeObject(u);
             }
@@ -87,17 +80,14 @@ public class ClientController {
         }
     }
 
-    public void updateConnectedList(ArrayList<User> users) {
-        connectedUsers.clear();
-        for (User u : users) {
-            connectedUsers.add(u);
-        }
-        ui.updateConnectedList(connectedUsers);
-    }
-
-    public ArrayList<User> getConnectedUsers() {
+    public User[] getConnectedUsers() {
         return connectedUsers;
     }
+
+    public void setConnectedUsers (User[] connectedUsers) {
+        this.connectedUsers = connectedUsers;
+    }
+
     public ArrayList<User> getContacts() {
         return contacts;
     }
@@ -120,24 +110,13 @@ public class ClientController {
         }
     }
 
-    public void sendMessage(String text, String fileName, String[] recipients) {
-        User[] recipientList = new User[100];
-        for (int i = 0; i < recipients.length; i++) {
-            User u = new User(recipients[i]);
-            recipientList[i] = u;
-        }
-        Message message = new Message(text, new ImageIcon(fileName), user, recipientList);
+    public void sendMessage(String text, String fileName, User[] recipients) {
+        Message message = new Message(text, new ImageIcon(fileName), user, recipients);
         messageClient.send(message);
     }
 
-    public void sendMessage(String text, String[] recipients) {
-        User[] recipientList = new User[100];
-        for (int i = 0; i < recipients.length; i++) {
-            User u = new User(recipients[i]);
-            recipientList[i] = u;
-        }
-        Message message = new Message(text, user, recipientList);
+    public void sendMessage(String text, User[] recipients) {
+        Message message = new Message(text, user, recipients);
         messageClient.send(message);
     }
-
 }

@@ -1,24 +1,22 @@
-package server;
+package controller;
 
-import client.MessageClient;
-import model.Log;
 import model.MessageManager;
-import model.LogFileManager;
-import server.panels.Menu;
+import view.Viewer;
+import view.panels.Menu;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 public class Controller {
 
-    private LogFileManager serverFileManager;
+    private model.LogFileManager serverFileManager;
     private MessageClient messageClient;
     public MessageServer messageServer;
     private Viewer menu;
 
     public Controller() {
 
-        serverFileManager = new LogFileManager("files/log.dat");
+        serverFileManager = new model.LogFileManager("files/log.dat");
         serverFileManager.addLog("Server started");
 
         menu = new Menu("Program Selection Menu", 400, 400, this);
@@ -47,7 +45,7 @@ public class Controller {
 
     public ArrayList<String> getStringFormatList(long time) {
         ArrayList<String> messages = new ArrayList<>();
-        for (Log log : serverFileManager.readLogFile(System.currentTimeMillis() - time, System.currentTimeMillis())) { //tests for logs made within last 10 seconds
+        for (model.Log log : serverFileManager.readLogFile(System.currentTimeMillis() - time, System.currentTimeMillis())) { //tests for logs made within last 10 seconds
             messages.add(log.toString());
         }
         return messages;
@@ -66,7 +64,7 @@ public class Controller {
         return false;
     }
 
-    public LogFileManager getServerFileManager() {
+    public model.LogFileManager getServerFileManager() {
         return serverFileManager;
     }
 
