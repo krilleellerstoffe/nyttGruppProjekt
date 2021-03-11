@@ -29,7 +29,7 @@ public class Menu extends Viewer {
 
     @Override
     public JPanel content() {
-        Action action = new Action(controller);
+        Action action = new Action(this, controller);
         JPanel panel = new JPanel();
         panel.setBackground(Color.white);
         JPanel inner = new JPanel();
@@ -58,11 +58,17 @@ public class Menu extends Viewer {
         return panel;
     }
 
+    public String getIP() {
+        return ip.getText();
+    }
+
     public class Action implements ActionListener {
 
+        private Menu menu;
         private Controller controller;
 
-        public Action(Controller controller) {
+        public Action(Menu menu, Controller controller) {
+            this.menu = menu;
             this.controller = controller;
         }
 
@@ -92,7 +98,7 @@ public class Menu extends Viewer {
 //            }
             if (e.getSource().equals(connectBtn)) {
                 if (controller.connect(ip.getText())) {
-                    Viewer cl = new Login("Client Log", 700, 500);
+                    Viewer cl = new Login(menu,"Client Log", 700, 500);
                     int x = (Toolkit.getDefaultToolkit().getScreenSize().width-cl.getWidth());
                     cl.setLocation(x, 300);
                     cl.show();

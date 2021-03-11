@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class ClientController {
 
-    private static final String SERVERADDRESS = "localhost";
+    //private static final String SERVERADDRESS = "localhost";
     private static final int PORT = 2555;
 
     private static final String FILEPATH_CONTACTS = "files/contacts.dat";
@@ -23,8 +23,9 @@ public class ClientController {
 
 
 
-    public ClientController() {
-        messageClient = new MessageClient(SERVERADDRESS, PORT);
+    public ClientController(String ipAddress) {
+
+        messageClient = new MessageClient(ipAddress, PORT);
         contacts = new ArrayList<User>();
         readContactsFromFile();
         messageClient.setClientController(this);

@@ -31,9 +31,9 @@ public class Login extends Viewer {
     private String username;
     private ClientController clientController;
 
-    public Login(String title, int width, int height) {
+    public Login(Menu menu, String title, int width, int height) {
         super(title, width, height);
-        this.clientController = new ClientController();
+        this.clientController = new ClientController(menu.getIP());
         add(content());
     }
 
