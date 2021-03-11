@@ -1,9 +1,5 @@
 package view.panels;
 
-
-import controller.MessageClient;
-import model.Message;
-import model.User;
 import controller.Controller;
 import view.Viewer;
 
@@ -11,7 +7,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 public class Menu extends Viewer {
 
@@ -49,11 +44,6 @@ public class Menu extends Viewer {
         serverBtn = new JButton("Run Server");
         serverBtn.addActionListener(action);
         inner.add(serverBtn);
-
-//        simpleConnect = new JButton("Connect simple controller.client");
-//        simpleConnect.addActionListener(action);
-//        inner.add(simpleConnect);
-
         panel.add(inner, BorderLayout.SOUTH);
         return panel;
     }
@@ -83,19 +73,6 @@ public class Menu extends Viewer {
                     JOptionPane.showMessageDialog(null, "Couldn't start server, might already be running.");
                 }
             }
-//            if(e.getSource().equals(simpleConnect)){
-//                MessageClient simpleClient = new MessageClient("localhost", 2555);
-//                try {
-//                    User simpleUser = new User(JOptionPane.showInputDialog("Enter username"));
-//                    simpleClient.connect(simpleUser);
-//                    User[] simpleRecipient = new User[1];
-//                    simpleRecipient[0] = new User(JOptionPane.showInputDialog("Enter recipient"));
-//                    simpleClient.send(new Message("simple message", simpleUser, simpleRecipient));
-//                } catch (IOException ioException) {
-//                    ioException.printStackTrace();
-//                }
-//
-//            }
             if (e.getSource().equals(connectBtn)) {
                 if (controller.connect(ip.getText())) {
                     Viewer cl = new Login(menu,"Client Log", 700, 500);
@@ -108,5 +85,4 @@ public class Menu extends Viewer {
             }
         }
     }
-
 }

@@ -16,11 +16,11 @@ import java.util.HashMap;
 public class MessageServer implements Runnable{
 
 
+    public Thread server = new Thread(this);
     private MessageManager messageManager;
     private ConnectedClients connectedClients;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private ServerSocket serverSocket;
-    public Thread server = new Thread(this);
     private boolean running;
 
 
@@ -61,6 +61,40 @@ public class MessageServer implements Runnable{
                  e.printStackTrace();
              }
          }
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void disconnect() {
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendToConnectedUsers(Message message) {
+
+        User[] recipients = message.getRecipients();
+        System.out.println("MessageServer" + recipients);
+        for (User user: recipients) {
+                ClientHandler clientHandler = connectedClients.get(user);
+                if (clientHandler!=null) {
+                    clientHandler.send(message);
+                    propertyChangeSupport.firePropertyChange("value", null, message.getSender().getUserName() + " to " + user.getUserName() + ": " + message.getText());
+                }
+                else {
+                    messageManager.storeMessage(user, message);
+                    propertyChangeSupport.firePropertyChange("value", null, message.getSender().getUserName() + " to " + user.getUserName() + " message stored");
+                }
+            }
+
+        }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     private class ClientHandler extends Thread {
@@ -123,40 +157,6 @@ public class MessageServer implements Runnable{
         }
     }
 
-    public boolean isRunning() {
-        return running;
-    }
-
-    public void disconnect() {
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendToConnectedUsers(Message message) {
-
-        User[] recipients = message.getRecipients();
-        System.out.println("MessageServer" + recipients);
-        for (User user: recipients) {
-                ClientHandler clientHandler = connectedClients.get(user);
-                if (clientHandler!=null) {
-                    clientHandler.send(message);
-                    propertyChangeSupport.firePropertyChange("value", null, message.getSender().getUserName() + " to " + user.getUserName() + ": " + message.getText());
-                }
-                else {
-                    messageManager.storeMessage(user, message);
-                    propertyChangeSupport.firePropertyChange("value", null, message.getSender().getUserName() + " to " + user.getUserName() + " message stored");
-                }
-            }
-
-        }
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
     private class ConnectedClients {
 
          private HashMap<User, ClientHandler> clients = new HashMap<User, ClientHandler>();
@@ -188,6 +188,4 @@ public class MessageServer implements Runnable{
             sendToConnectedUsers(message);
         }
     }
-
-
 }
