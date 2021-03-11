@@ -158,8 +158,10 @@ public class ClientConsole extends JPanel implements PropertyChangeListener {
             Message message = (Message) evt.getNewValue();
             updateMessageWindow(message);
             if (message.getIcon() != null) {
+                JFrame pictureFrame = new JFrame();
+                pictureFrame.setPreferredSize(new Dimension(200, 200));
                // JOptionPane.showMessageDialog(null, message.getSender().getUserName() + " sent you a message", "A new Message", message.getSender().getImage());
-                JOptionPane.showMessageDialog(null, message.getText(), "A New Message", JOptionPane.INFORMATION_MESSAGE, message.getIcon());
+                JOptionPane.showMessageDialog(pictureFrame, message.getText(), "A New Message", JOptionPane.INFORMATION_MESSAGE, message.getIcon());
             }
         }
         if (evt.getPropertyName().equals("connectedUsers")) {

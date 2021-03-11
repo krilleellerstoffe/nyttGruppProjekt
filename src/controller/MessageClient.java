@@ -80,6 +80,7 @@ public class MessageClient implements Runnable {
     public void send(Message message) {
         if(message.getRecipients().length <= 0 ) {
             JOptionPane.showMessageDialog(null, "No receivers selected, please choose someone to send your message to!");
+        }else {
             try {
                 oos.writeObject(message);
                 //JOptionPane.showMessageDialog(null, "message with " + message.getRecipients().length +" recipients sent");

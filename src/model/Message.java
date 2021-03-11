@@ -2,6 +2,8 @@ package model;
 
 import javax.swing.*;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Message implements Serializable {
@@ -72,8 +74,9 @@ public class Message implements Serializable {
 
         Date dateCreated = new Date(getTimeReceivedByServer());
         Date dateReceived = new Date(getTimeMessageDelivered());
+        DateFormat dateFormat = new SimpleDateFormat();
 
-        String messageContents = dateReceived + getText() + " " + "sent by " + getSender().getUserName() +" " + dateCreated;
+        String messageContents = dateFormat.format(dateReceived) + ": \"" + getText() + "\" " + "sent by " + getSender().getUserName() +" at: " + dateFormat.format(dateCreated);
         return messageContents;
     }
 }
